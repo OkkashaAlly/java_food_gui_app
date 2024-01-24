@@ -1,4 +1,12 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -9,17 +17,17 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.table.DefaultTableModel;
-import java.sql.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class App {
+    // GUI components
     JTextField jtf_foodname, jtf_foodprice;
     JTextArea jta_fooddesc;
     JButton jb_add, jb_delete, jb_update, jb_search;
     JTable jt;
     JFrame frame;
     JLabel lbl_foodname, lbl_foodprice, lbl_fooddesc;
+
+    // Data structures
     ArrayList<Food> foodlist;
     Food food;
     String header[] = new String[] {
@@ -35,20 +43,27 @@ public class App {
         }
     };
 
+    // Database connection
     static Connection conn;
     ResultSet rs;
-    int row, col;
 
     public static void main(String[] args) throws Exception {
+        // Initialize the SQLite database connection
         String url = "jdbc:sqlite:food.db";
         conn = DriverManager.getConnection(url);
+
+        // Create an instance of the application
         App app = new App();
+
+        // Set up the main interface, check tables, and load initial data
         app.mainInterface();
         app.checkTables();
         app.loadData();
     }
 
+    // Method to set up the main graphical interface
     private void mainInterface() {
+        // GUI setup code
         frame = new JFrame();
         lbl_foodname = new JLabel();
         lbl_foodname.setText("Food Name");
@@ -115,24 +130,33 @@ public class App {
         frame.setVisible(true); // making the frame visible
     }
 
+    // ActionListener for adding a new food entry
     ActionListener addFoodListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
+            // Extract data from GUI components
             String foodname = jtf_foodname.getText().toString();
             String foodprice = jtf_foodprice.getText().toString();
             String fooddesc = jta_fooddesc.getText().toString();
+
+            // Validate input
             if (foodname.isEmpty() || foodprice.isEmpty() || fooddesc.isEmpty()) {
                 JOptionPane.showMessageDialog(frame, "Please enter food info");
                 jtf_foodname.requestFocus();
             } else {
+                // Confirm with the user before inserting the data
                 int result = JOptionPane.showConfirmDialog(frame, "Insert this food data " + foodname + "?", "Insert",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE);
+
+                // Execute the SQL query to insert data into the database
                 if (result == JOptionPane.YES_OPTION) {
                     try {
                         Statement stmt = conn.createStatement();
                         stmt.executeUpdate("insert into tbl_foods (`food_name`, `food_price`, `food_desc`) VALUES ('" +
                                 foodname + "','" + foodprice + "','" + fooddesc + "')");
+
+                        // Reload data to update the table
                         loadData();
                     } catch (Exception err) {
                         System.out.println(err);
@@ -142,6 +166,7 @@ public class App {
         }
     };
 
+    // Method to check and create tables if they don't exist
     private void checkTables() {
         System.out.println("Check table");
         String sql = "CREATE TABLE IF NOT EXISTS tbl_foods (" +
@@ -150,6 +175,8 @@ public class App {
                 "	food_price real NOT NULL," +
                 "	food_desc text NOT NULL" +
                 ");";
+
+        // Execute the SQL query to create the table if it doesn't exist
         try {
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(sql);
@@ -158,6 +185,7 @@ public class App {
         }
     }
 
+    // Method to load data from the database and populate the table
     private void loadData() throws SQLException {
         System.out.println("Load data");
         foodlist = new ArrayList<>();
@@ -179,6 +207,7 @@ public class App {
         }
     }
 
+    // Mouse listener to capture mouse clicks on the table
     MouseInputAdapter mouseListener = new MouseInputAdapter() {
         @Override
         public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -194,6 +223,7 @@ public class App {
         }
     };
 
+    // ActionListener for updating a food entry
     ActionListener updateFoodListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -223,6 +253,7 @@ public class App {
         }
     };
 
+        // ActionListener for deleting a food entry
     ActionListener delFoodListener = new ActionListener() {
 
         @Override
@@ -250,8 +281,8 @@ public class App {
         }
     };
 
+        // ActionListener for searching for a food entry
     ActionListener searchFoodListener = new ActionListener() {
-
         @Override
         public void actionPerformed(ActionEvent e) {
 
