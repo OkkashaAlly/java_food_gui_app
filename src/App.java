@@ -20,21 +20,21 @@ import javax.swing.table.DefaultTableModel;
 
 public class App {
     // GUI components
-    JTextField jtf_foodname, jtf_foodprice;
-    JTextArea jta_fooddesc;
+    JTextField jtf_productname, jtf_productprice;
+    JTextArea jta_productdesc;
     JButton jb_add, jb_delete, jb_update, jb_search;
     JTable jt;
     JFrame frame;
-    JLabel lbl_foodname, lbl_foodprice, lbl_fooddesc;
+    JLabel lbl_productname, lbl_productprice, lbl_productdesc;
 
     // Data structures
-    ArrayList<Food> foodlist;
-    Food food;
+    ArrayList<Product> productlist;
+    Product product;
     String header[] = new String[] {
             "ID",
-            "Food Name",
-            "Food Price",
-            "Food Description"
+            "Product Name",
+            "Product Price",
+            "Product Description"
     };
     DefaultTableModel dtm = new DefaultTableModel(0, 0) {
         @Override
@@ -49,7 +49,7 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         // Initialize the SQLite database connection
-        String url = "jdbc:sqlite:food.db";
+        String url = "jdbc:sqlite:product.db";
         conn = DriverManager.getConnection(url);
 
         // Create an instance of the application
@@ -65,57 +65,57 @@ public class App {
     private void mainInterface() {
         // GUI setup code
         frame = new JFrame();
-        lbl_foodname = new JLabel();
-        lbl_foodname.setText("Food Name");
-        lbl_foodname.setBounds(10, 10, 100, 50);
-        frame.add(lbl_foodname);
+        lbl_productname = new JLabel();
+        lbl_productname.setText("Product Name");
+        lbl_productname.setBounds(10, 10, 100, 50);
+        frame.add(lbl_productname);
 
-        jtf_foodname = new JTextField();
-        jtf_foodname.setBounds(100, 25, 250, 25);
-        frame.add(jtf_foodname);
+        jtf_productname = new JTextField();
+        jtf_productname.setBounds(100, 25, 250, 25);
+        frame.add(jtf_productname);
 
-        lbl_foodprice = new JLabel();
-        lbl_foodprice.setText("Price");
-        lbl_foodprice.setBounds(10, 35, 100, 50);
-        frame.add(lbl_foodprice);
+        lbl_productprice = new JLabel();
+        lbl_productprice.setText("Price");
+        lbl_productprice.setBounds(10, 35, 100, 50);
+        frame.add(lbl_productprice);
 
-        jtf_foodprice = new JTextField();
-        jtf_foodprice.setBounds(100, 50, 100, 25);
-        frame.add(jtf_foodprice);
+        jtf_productprice = new JTextField();
+        jtf_productprice.setBounds(100, 50, 100, 25);
+        frame.add(jtf_productprice);
 
-        lbl_fooddesc = new JLabel();
-        lbl_fooddesc.setText("Description");
-        lbl_fooddesc.setBounds(10, 55, 100, 50);
-        frame.add(lbl_fooddesc);
+        lbl_productdesc = new JLabel();
+        lbl_productdesc.setText("Description");
+        lbl_productdesc.setBounds(10, 55, 100, 50);
+        frame.add(lbl_productdesc);
 
-        jta_fooddesc = new JTextArea();
-        jta_fooddesc.setBounds(100, 75, 250, 50);
-        jta_fooddesc.setBorder(new JTextField().getBorder());
-        frame.add(jta_fooddesc);
+        jta_productdesc = new JTextArea();
+        jta_productdesc.setBounds(100, 75, 250, 50);
+        jta_productdesc.setBorder(new JTextField().getBorder());
+        frame.add(jta_productdesc);
 
         jb_add = new JButton();
         jb_add.setText("Add");
         jb_add.setBounds(10, 140, 100, 25);
         frame.add(jb_add);
-        jb_add.addActionListener(addFoodListener);
+        jb_add.addActionListener(addProductListener);
 
         jb_delete = new JButton();
         jb_delete.setText("Delete");
         jb_delete.setBounds(120, 140, 100, 25);
         frame.add(jb_delete);
-        jb_delete.addActionListener(delFoodListener);
+        jb_delete.addActionListener(delProductListener);
 
         jb_update = new JButton();
         jb_update.setText("Update");
         jb_update.setBounds(230, 140, 100, 25);
         frame.add(jb_update);
-        jb_update.addActionListener(updateFoodListener);
+        jb_update.addActionListener(updateProductListener);
 
         jb_search = new JButton();
         jb_search.setText("Search");
         jb_search.setBounds(340, 140, 100, 25);
         frame.add(jb_search);
-        jb_search.addActionListener(searchFoodListener);
+        jb_search.addActionListener(searchProductListener);
 
         jt = new JTable();
         jt.setModel(dtm);
@@ -130,22 +130,22 @@ public class App {
         frame.setVisible(true); // making the frame visible
     }
 
-    // ActionListener for adding a new food entry
-    ActionListener addFoodListener = new ActionListener() {
+    // ActionListener for adding a new product entry
+    ActionListener addProductListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             // Extract data from GUI components
-            String foodname = jtf_foodname.getText().toString();
-            String foodprice = jtf_foodprice.getText().toString();
-            String fooddesc = jta_fooddesc.getText().toString();
+            String productname = jtf_productname.getText().toString();
+            String productprice = jtf_productprice.getText().toString();
+            String productdesc = jta_productdesc.getText().toString();
 
             // Validate input
-            if (foodname.isEmpty() || foodprice.isEmpty() || fooddesc.isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Please enter food info");
-                jtf_foodname.requestFocus();
+            if (productname.isEmpty() || productprice.isEmpty() || productdesc.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Please enter product info");
+                jtf_productname.requestFocus();
             } else {
                 // Confirm with the user before inserting the data
-                int result = JOptionPane.showConfirmDialog(frame, "Insert this food data " + foodname + "?", "Insert",
+                int result = JOptionPane.showConfirmDialog(frame, "Insert this product data " + productname + "?", "Insert",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE);
 
@@ -153,8 +153,8 @@ public class App {
                 if (result == JOptionPane.YES_OPTION) {
                     try {
                         Statement stmt = conn.createStatement();
-                        stmt.executeUpdate("insert into tbl_foods (`food_name`, `food_price`, `food_desc`) VALUES ('" +
-                                foodname + "','" + foodprice + "','" + fooddesc + "')");
+                        stmt.executeUpdate("insert into tbl_products (`product_name`, `product_price`, `product_desc`) VALUES ('" +
+                                productname + "','" + productprice + "','" + productdesc + "')");
 
                         // Reload data to update the table
                         loadData();
@@ -169,11 +169,11 @@ public class App {
     // Method to check and create tables if they don't exist
     private void checkTables() {
         System.out.println("Check table");
-        String sql = "CREATE TABLE IF NOT EXISTS tbl_foods (" +
+        String sql = "CREATE TABLE IF NOT EXISTS tbl_products (" +
                 "	id integer PRIMARY KEY AUTOINCREMENT," +
-                "	food_name text NOT NULL," +
-                "	food_price real NOT NULL," +
-                "	food_desc text NOT NULL" +
+                "	product_name text NOT NULL," +
+                "	product_price real NOT NULL," +
+                "	product_desc text NOT NULL" +
                 ");";
 
         // Execute the SQL query to create the table if it doesn't exist
@@ -188,20 +188,20 @@ public class App {
     // Method to load data from the database and populate the table
     private void loadData() throws SQLException {
         System.out.println("Load data");
-        foodlist = new ArrayList<>();
+        productlist = new ArrayList<>();
         Statement stmt = conn.createStatement();
-        rs = stmt.executeQuery("select * from tbl_foods");
-        foodlist.clear();
+        rs = stmt.executeQuery("select * from tbl_products");
+        productlist.clear();
         while (rs.next()) {
-            foodlist.add(new Food(rs.getInt(1), rs.getString(2), rs.getFloat(3), rs.getString(4)));
+            productlist.add(new Product(rs.getInt(1), rs.getString(2), rs.getFloat(3), rs.getString(4)));
         }
         dtm.setRowCount(0); // reset data model
-        for (int i = 0; i < foodlist.size(); i++) {
+        for (int i = 0; i < productlist.size(); i++) {
             Object[] objs = {
-                    foodlist.get(i).foodid,
-                    foodlist.get(i).foodname,
-                    foodlist.get(i).foodprice,
-                    foodlist.get(i).fooddesc,
+                    productlist.get(i).productid,
+                    productlist.get(i).productname,
+                    productlist.get(i).productprice,
+                    productlist.get(i).productdesc,
             };
             dtm.addRow(objs);
         }
@@ -214,35 +214,35 @@ public class App {
             int row = jt.rowAtPoint(evt.getPoint());
             int col = jt.columnAtPoint(evt.getPoint());
             if (row >= 0 && col >= 0) {
-                jtf_foodname.setText(jt.getValueAt(row, 1).toString());
-                jtf_foodprice.setText(jt.getValueAt(row, 2).toString());
-                jta_fooddesc.setText(jt.getValueAt(row, 3).toString());
-                food = new Food(Integer.parseInt(jt.getValueAt(row, 0).toString()), jt.getValueAt(row, 1).toString(),
+                jtf_productname.setText(jt.getValueAt(row, 1).toString());
+                jtf_productprice.setText(jt.getValueAt(row, 2).toString());
+                jta_productdesc.setText(jt.getValueAt(row, 3).toString());
+                product = new Product(Integer.parseInt(jt.getValueAt(row, 0).toString()), jt.getValueAt(row, 1).toString(),
                         Double.parseDouble(jt.getValueAt(row, 0).toString()), jt.getValueAt(row, 0).toString());
             }
         }
     };
 
-    // ActionListener for updating a food entry
-    ActionListener updateFoodListener = new ActionListener() {
+    // ActionListener for updating a product entry
+    ActionListener updateProductListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String foodname = jtf_foodname.getText().toString();
-            String foodprice = jtf_foodprice.getText().toString();
-            String fooddesc = jta_fooddesc.getText().toString();
-            if (food == null) {
+            String productname = jtf_productname.getText().toString();
+            String productprice = jtf_productprice.getText().toString();
+            String productdesc = jta_productdesc.getText().toString();
+            if (product == null) {
                 System.out.println("Null");
             } else {
 
-                int result = JOptionPane.showConfirmDialog(frame, "Update " + food.foodname + "?", "Swing Tester",
+                int result = JOptionPane.showConfirmDialog(frame, "Update " + product.productname + "?", "Swing Tester",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE);
                 if (result == JOptionPane.YES_OPTION) {
                     try {
-                        System.out.println("Food " + food.foodname);
+                        System.out.println("Product " + product.productname);
                         Statement stmt = conn.createStatement();
-                        stmt.executeUpdate("update tbl_foods set food_name = '" + foodname + "', food_price = " +
-                                foodprice + ", food_desc='" + fooddesc + "' where id =" + food.foodid + "");
+                        stmt.executeUpdate("update tbl_products set product_name = '" + productname + "', product_price = " +
+                                productprice + ", product_desc='" + productdesc + "' where id =" + product.productid + "");
                         loadData();
                     } catch (Exception err) {
                         System.out.println(err);
@@ -253,23 +253,23 @@ public class App {
         }
     };
 
-        // ActionListener for deleting a food entry
-    ActionListener delFoodListener = new ActionListener() {
+        // ActionListener for deleting a product entry
+    ActionListener delProductListener = new ActionListener() {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (food == null) {
+            if (product == null) {
                 System.out.println("Null");
             } else {
 
-                int result = JOptionPane.showConfirmDialog(frame, "Delete " + food.foodname + "?", "Swing Tester",
+                int result = JOptionPane.showConfirmDialog(frame, "Delete " + product.productname + "?", "Swing Tester",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE);
                 if (result == JOptionPane.YES_OPTION) {
                     try {
-                        System.out.println("Food " + food.foodname);
+                        System.out.println("Product " + product.productname);
                         Statement stmt = conn.createStatement();
-                        stmt.executeUpdate("delete from tbl_foods where id = '" + food.foodid + "'");
+                        stmt.executeUpdate("delete from tbl_products where id = '" + product.productid + "'");
                         loadData();
                     } catch (Exception err) {
                         System.out.println(err);
@@ -281,30 +281,30 @@ public class App {
         }
     };
 
-        // ActionListener for searching for a food entry
-    ActionListener searchFoodListener = new ActionListener() {
+        // ActionListener for searching for a product entry
+    ActionListener searchProductListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            String search = JOptionPane.showInputDialog("Enter food name");
+            String search = JOptionPane.showInputDialog("Enter product name");
             System.out.println(search);
 
-            foodlist = new ArrayList<>();
+            productlist = new ArrayList<>();
             try {
 
                 Statement stmt = conn.createStatement();
-                rs = stmt.executeQuery("select * from tbl_foods where food_name LIKE '%" + search + "%'");
-                foodlist.clear();
+                rs = stmt.executeQuery("select * from tbl_products where product_name LIKE '%" + search + "%'");
+                productlist.clear();
                 while (rs.next()) {
-                    foodlist.add(new Food(rs.getInt(1), rs.getString(2), rs.getFloat(3), rs.getString(4)));
+                    productlist.add(new Product(rs.getInt(1), rs.getString(2), rs.getFloat(3), rs.getString(4)));
                 }
                 dtm.setRowCount(0); // reset data model
-                for (int i = 0; i < foodlist.size(); i++) {
+                for (int i = 0; i < productlist.size(); i++) {
                     Object[] objs = {
-                            foodlist.get(i).foodid,
-                            foodlist.get(i).foodname,
-                            foodlist.get(i).foodprice,
-                            foodlist.get(i).fooddesc,
+                            productlist.get(i).productid,
+                            productlist.get(i).productname,
+                            productlist.get(i).productprice,
+                            productlist.get(i).productdesc,
                     };
                     dtm.addRow(objs);
                 }
